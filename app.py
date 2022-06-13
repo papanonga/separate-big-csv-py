@@ -1,4 +1,5 @@
 from datetime import date
+from fileinput import filename
 import timeit
 from os import path
 import pandas as pd
@@ -10,14 +11,26 @@ def getSpecifiedDataFromChunk(data):
         "date" : data['TextTime'].split(' ')[0],
         "province" : data['NE Name'][:3]
     }
-    return f'{case.get("province")}-{case.get("date")}.csv'
+    # return f'{}-{}.csv'
+    return f'LTE KPI Backup EAS {case.get("province")}&{case.get("date")}.csv'
+
+
+
+
+
 
 def main():
+
+    # Edit here
+    pathForSearch = 'Enter your path here'
+
+
+
     start = timeit.default_timer()
     result = []
     dateWithProvinceList = []
 
-    for chunk in pd.read_csv('./data/ *** Specify your file ***', chunksize=chunksize):
+    for chunk in pd.read_csv(pathForSearch, chunksize=chunksize):
         result.append(chunk)
 
     # get date from ['TextTime]
@@ -29,7 +42,7 @@ def main():
 
     # create file named date and generate the header
     for i in range(len(dateWithProvinceList)):
-        fileName = f'{dateWithProvinceList[i][1]}-{dateWithProvinceList[i][0]}.csv'
+        fileName = getSpecifiedDataFromChunk(data=result[0].iloc[i])
         if path.isfile(f'./result/{fileName}'):
             pass
 
@@ -46,6 +59,7 @@ def main():
     # # read write file
     for i in range(len(result[0])):
         dateWithProvinceOfChunk = getSpecifiedDataFromChunk(data=result[0].iloc[i])
+
         if path.isfile(f'./result/{dateWithProvinceOfChunk}'):
             result[0].iloc[[i]].to_csv(f'./result/{dateWithProvinceOfChunk}', index=False, header=False, mode='a')
             countWriter += 1
