@@ -1,6 +1,4 @@
-import time
-from datetime import date
-from fileinput import filename
+
 import timeit
 from os import path
 import pandas as pd
@@ -19,7 +17,7 @@ def getSpecifiedDataFromChunk(data):
 def main():
 
     # Edit here
-    pathForSearch = './data/LTE KPI Backup EAS 20220221.csv'
+    pathForSearch = 'Write your path here'
 
     fileNameList = []
     start = timeit.default_timer()
@@ -59,26 +57,9 @@ def main():
                     
 
 
-    print('Waiting create file')
-    indexFileNameList = 0
-
-    # while True:
-
-    #     if indexFileNameList == len(fileNameList):
-    #         print("Finished")
-    #         break
-
-    #     if path.exists(fileNameList[indexFileNameList]):
-    #         time.sleep(1)
-    #     else:
-    #         indexFileNameList += 1
-
-    # print('create finished')
-
     countWriter = 0
 
     # # read write file
-    print('Read wirte files : ', len(result[0]))
 
     oldPath = getSpecifiedDataFromChunk(data=result[0].iloc[0])
     countWrongPath = 0
