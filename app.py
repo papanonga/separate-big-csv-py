@@ -1,8 +1,9 @@
 
+import tqdm
 import timeit
 from os import path
 import pandas as pd
-chunksize = 10 ** 8
+chunksize = 10 ** 7
 
 
 def getSpecifiedDataFromChunk(data):
@@ -20,18 +21,20 @@ def getNameForCreateFiles(province, date):
 def main():
 
     # Edit here
-    pathForSearch = './data/LTE KPI Backup EAS 20220609.csv'
-
+    pathForSearch = ' Edit your path here'
+    countWriter = 0
     start = timeit.default_timer()
     result = []
     dateWithProvinceList = []
+    print("Reading data ")
 
     for chunk in pd.read_csv(pathForSearch, chunksize=chunksize):
         result.append(chunk)
 
+    print(type(result[0]))
+
     # get date from ['TextTime]
     for i in range(len(result[0])):
-    # for i in range(40):
         chunkDate = result[0].iloc[i]['TextTime'].split(' ')[0]
         chunkProvince = result[0].iloc[i]['NE Name'][:3]
         if [chunkDate, chunkProvince] not in dateWithProvinceList:
@@ -39,7 +42,6 @@ def main():
 
     # create file named date and generate the header
     print("Create file")
-
     for i in range(len(dateWithProvinceList)):
         dateFromList = dateWithProvinceList[i][0]
         provinceFromList = dateWithProvinceList[i][1]
@@ -59,37 +61,23 @@ def main():
                         continue
                     f.write(',')
 
-    countWriter = 0
-
-    # # read write file
-
-    # oldPath = getSpecifiedDataFromChunk(data=result[0].iloc[0])
     countWrongPath = 0
-
     for i in range(len(result[0])):
-    # for i in range(40):
-
         dateWithProvinceOfChunk = getSpecifiedDataFromChunk(
             data=result[0].iloc[i])
-        # if oldPath != dateWithProvinceOfChunk:
-        #     countWrongPath += 1
-        #     oldPath = dateWithProvinceOfChunk
-        # print('Index : ', i+1,' ',dateWithProvinceOfChunk)
-        # print('Index : ', i+1,' ', )
-
         if path.isfile(f'./result/{dateWithProvinceOfChunk}'):
             result[0].iloc[[i]].to_csv(
                 f'./result/{dateWithProvinceOfChunk}', index=False, header=False, mode='a')
             countWriter += 1
 
+
+    print("files created")
     print('Len files : ', len(result[0]))
     print('Count writer', countWriter)
     stop = timeit.default_timer()
     print("Run time :", int(stop-start) // 60,
           " min ", int((stop-start) % 60), ' sec ')
-    print("Wrong path : ", countWrongPath)
     print('End')
-
     return
 
 
